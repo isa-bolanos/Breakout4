@@ -123,10 +123,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // now, figure the number and spacing of each row of bricks
         let count = Int(frame.width) / 55   // bricks per row
         let xOffset = (Int(frame.width) - (count * 55)) / 2 + Int(frame.minX) + 25
-        let y = Int(frame.maxY) - 65
-        for i in 0..<count {
-            let x = i * 55 + xOffset
-            makeBrick(x: x, y: y, color: .green)
+        let colors: [UIColor] = [.blue, .orange, .green]
+        for r in 0..<3 {
+            let y = Int(frame.maxY) - 65 - (r * 25)
+            for i in 0..<count {
+                let x = i * 55 + xOffset
+                makeBrick(x: x, y: y, color: colors[r])
+           }
         }
     }
     
@@ -149,6 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         livesLabel.fontSize = 18
         livesLabel.fontColor = .black
+        livesLabel.fontName = "Arial"
         livesLabel.position = CGPoint(x: frame.minX + 50, y: frame.minY + 18)
         addChild(livesLabel)
         
@@ -166,10 +170,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 contact.bodyB.node == brick {
              score += 1
                 updateLabels()
-                brick.removeFromParent()
-                removedBricks += 1
-                if removedBricks == bricks.count {
-                    gameOver(winner: true)
+                if brick.color == .blue {
+                    brick.color = .orange   // blue bricks turn orange
+                }
+                else if brick.color == .orange {
+                    brick.color = .green   // orange bricks turn green
+                }
+                else {  // must be a green brick, which get removed
+                    brick.removeFromParent()
+                    removedBricks += 1
+                    if removedBricks == bricks.count {
+                        gameOver(winner: true)
+                    }
                 }
             }
         }
